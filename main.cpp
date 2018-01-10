@@ -20,23 +20,35 @@ int main(int argc, char** argv ) {
         throw "Error when reading avi";
     }
     long count=0;
+    int cooling = 0;
     while(true) {
         count++;
-        if(count%2){
-            capture>>frameA;
-            if(frameA.empty())
+        if (count % 2) {
+            capture >> frameA;
+            if (frameA.empty())
                 break;
-        }else{
-            capture>>frameB;
-            if(frameB.empty())
+        } else {
+            capture >> frameB;
+            if (frameB.empty())
                 break;
         }
-        if(count>1){
-            double diff = getPSNR(frameA,frameB);
-            if(diff>thresh){
-                cout<<"["<<count<<"] "<<diff<<endl;
+        if (count > 1) {
+            double diff = getPSNR(frameA, frameB);
+            if (cooling){
+
+            }
+            if (diff > thresh) {
+                if(!cooling){
+                    cout << "[" << count << "] " << diff << endl;
+                }
+                cooling=10;
+            }else{
+                if(cooling){
+                    cooling--;
+                }
             }
         }
+    }
     return 0;
 }
 
