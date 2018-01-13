@@ -64,6 +64,7 @@ int main(int argc, char** argv ) {
 
 
 double getHIST( const Mat& i1, const Mat& i2){
+    //set some parameters
     int channels[] = { 0, 1 };
     int histSize[] = { 50, 60 };
     float h_ranges[] = { 0, 180 };
@@ -71,31 +72,35 @@ double getHIST( const Mat& i1, const Mat& i2){
     const float* ranges[] = { h_ranges, s_ranges };
     Mat hsv1, hsv2;
     MatND hist1, hist2;
+    //convert to HSV
     cvtColor( i1, hsv1, COLOR_BGR2HSV );
     cvtColor( i2, hsv2, COLOR_BGR2HSV );
+    //calculate histograms
     calcHist( &hsv1, 1, channels, Mat(), hist1, 2, histSize, ranges, true, false );
     calcHist( &hsv2, 1, channels, Mat(), hist2, 2, histSize, ranges, true, false );
+    //normalize
     normalize( hist1, hist1, 0, 1, NORM_MINMAX, -1, Mat() );
     normalize( hist2, hist2, 0, 1, NORM_MINMAX, -1, Mat() );
+    //compare
     return compareHist(hist1, hist2, 0);
 }
 
 
 double getPSNR(const Mat& i1, const Mat& i2) {
     Mat s1;
-    absdiff(i1, i2, s1);       // |i1 - i2|
-    s1.convertTo(s1, CV_32F);  // cannot make a square on 8 bits
-    s1 = s1.mul(s1);           // |i1 - i2|^2
-
-    Scalar s = sum(s1);         // sum elements per channel
-
-    double sse = s.val[0] + s.val[1] + s.val[2]; // sum channels
-//    cout<<sse<<endl;
-    if( sse <= 1e-10) // for small values return zero
+    //calculate diff
+    absdiff(i1, i2, s1);
+    s1.convertTo(s1, CV_32F);
+    //|i1 - i2|^2
+    s1 = s1.mul(s1);
+    //sum pixels for each channel
+    Scalar s = sum(s1);
+    double ss = s.val[0] + s.val[1] + s.val[2]; // sum channels
+    if( ss <= 1e-10){ // for small values return zero
         return 0;
-    else
-    {
-        double  mse =sse /(double)(i1.channels() * i1.total());
+    }else{
+        //calculate psnr
+        double  mse =ss /(double)(i1.channels() * i1.total());
         double psnr = 10.0*log10((255*255)/mse);
         return psnr;
     }
