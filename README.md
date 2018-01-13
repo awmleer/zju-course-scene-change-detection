@@ -74,13 +74,24 @@ return compareHist(hist1, hist2, 0);
 
 PSNR越大，表示两幅图像的相似程度越高。
 
+### 图像比较结果的筛选
+
+通过以上两种方法，可以计算出图像的相似程度，但是还需要做进一步的筛选，得到最终镜头切换的检测结果。这里一方面要通过阈值`thresh`参数做判断，另一方面，为了防止连续几帧都被识别出来（这在一些渐变切换或者动画切换的过场中经常发生），我加入了`cooling`变量，会在连续10帧都不被识别后，才进入有效状态，允许再次检测出结果。
+
 ## Experiment Results
 
 1. 通过`cmake`进行编译。
-2. ​
+
+2. 直方图方法得到的结果：（阈值设置为0.6）
+
+   ![hist](assets/hist.png)
+
+3. PSNR方法得到的结果：（阈值设置为12）
+
+   ![psnr](assets/psnr.png)
 
 ## References
 
-[^1]: https://docs.opencv.org/2.4/doc/tutorials/imgproc/histograms/histogram_comparison/histogram_comparison.html
-[^2]: https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio
+> 1. https://docs.opencv.org/2.4/doc/tutorials/imgproc/histograms/histogram_comparison/histogram_comparison.html
+> 2. https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio
 

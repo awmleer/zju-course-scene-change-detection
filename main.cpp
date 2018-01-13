@@ -27,9 +27,10 @@ int main(int argc, char** argv ) {
     //two frames used for comparison
     Mat frameA, frameB;
     long count=0;
-    int cooling = 0;
+    int cooling = 0;//cooling is used for prevent continuous detection output
     while(true) {
         count++;
+        //read frame
         if (count % 2) {
             capture >> frameA;
             if (frameA.empty())
@@ -39,7 +40,7 @@ int main(int argc, char** argv ) {
             if (frameB.empty())
                 break;
         }
-        if (count > 1) {
+        if (count > 1) {//if it is the first frame, then skip
             double diff;
             if(method==0){
                 diff = getHIST(frameA, frameB);
